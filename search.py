@@ -91,7 +91,7 @@ def depthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     frontier = util.Stack()
     initial_node = (problem.getStartState(), [])
-    frontier.push(initial_node)
+    frontier.push(initial_node, 0)
     explored = []
     while (frontier.isEmpty() == False):
         curr_node, path = frontier.pop()
