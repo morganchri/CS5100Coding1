@@ -387,16 +387,23 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
         xy2 = pointB
         return ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2) ** 0.5
 
+    def manhattanDistance(pointA,pointB):
+        "The Manhattan distance heuristic for a PositionSearchProblem"
+        xy1 = pointA
+        xy2 = pointB
+        return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
     distances = dict()
-    for corner in problem.corners:
+    for corner in corners:
         xy1 = state[0]
         xy2 = corner
-        distance = ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+        distance = manhattanDistance(xy1,xy2)
         distances[corner] = distance
 
-    x = euclideanDistance(max(distances, key=distances.get),sorted(distances, key=distances.get)[-2])
-    y = euclideanDistance(sorted(distances, key=distances.get)[-2], problem.getStartState()[0])
-    return x + y
+    x = manhattanDistance(max(distances, key=distances.get),sorted(distances, key=distances.get)[-2])
+    y = manhattanDistance(sorted(distances, key=distances.get)[-2], problem.getStartState()[0])
+    #return x + y
+    return min(distances.values())
     #return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -491,7 +498,12 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    distances = []
+    xy1 = position
+    for food in foodGrid.asList():
+        distances.append(abs(xy1[0] - food[0]) + abs(xy1[1] - food[1]))
+    #return 0
+    return  len(distances)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -522,7 +534,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.aStarSearch(problem)
+        #util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -558,7 +571,16 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        distance = []
+        for item in self.food.asList():
+            distance.append(util.manhattanDistance(self.getStartState(), item))
+        mindex = distance.index(min(distance))
+        print(mindex)
+        if (state == self.food.asList()[mindex]):
+            return True
+        else:
+            return False
+        #util.raiseNotDefined()
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
